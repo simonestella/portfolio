@@ -33,9 +33,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Set this to /repo-name if NOT using a custom domain or root pages site.
-          # Leave empty if deploying to username.github.io (root) or with a custom domain.
-          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_BASE_PATH: "/portfolio"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
