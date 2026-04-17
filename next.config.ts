@@ -6,9 +6,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: "export",
   basePath,
-  assetPrefix: basePath,
   images: {
     unoptimized: true,
+    loader: "custom",
+    loaderFile: "./lib/image-loader.ts",
   },
 };
 
