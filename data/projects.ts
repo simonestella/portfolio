@@ -34,7 +34,7 @@ export const projects: ProjectItem[] = [
       { it: "Ottimizzazione del ciclo sense–think–act, riducendo la latenza decisionale e migliorando la reattività dell’agente in tempo reale.", en: "Optimized the sense–think–act loop, improving latency and real‑time responsiveness of the agent." }
     ],
     icon: "spark",
-    groups: ["AI"]
+    groups: ["AI", "Python"]
   },
   {
     id: "tracknet",
