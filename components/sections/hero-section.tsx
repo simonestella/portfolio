@@ -8,9 +8,7 @@ import Image from "next/image";
 import { projects } from "@/data/projects";
 
 const socials = [
-  { id: "github", label: "GitHub", href: "" },
   { id: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/work-simone-stella/" },
-  { id: "instagram", label: "Instagram", href: "" }
 ] as const;
 
 const containerVariants = {
@@ -34,29 +32,11 @@ export function HeroSection() {
     document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const getSocialIcon = (id: (typeof socials)[number]["id"]) => {
-    if (id === "github") {
-      return (
-        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <path d="M12 2C6.48 2 2 6.59 2 12.26C2 16.8 4.87 20.65 8.84 22.01C9.34 22.11 9.52 21.79 9.52 21.51C9.52 21.26 9.51 20.58 9.51 19.68C6.73 20.3 6.14 18.31 6.14 18.31C5.68 17.1 5.03 16.78 5.03 16.78C4.12 16.14 5.1 16.15 5.1 16.15C6.11 16.22 6.64 17.21 6.64 17.21C7.54 18.79 9 18.34 9.57 18.08C9.67 17.4 9.92 16.94 10.2 16.68C7.98 16.42 5.65 15.53 5.65 11.55C5.65 10.42 6.04 9.49 6.68 8.76C6.58 8.5 6.23 7.45 6.78 6.04C6.78 6.04 7.62 5.76 9.5 7.09C10.3 6.86 11.15 6.75 12 6.74C12.85 6.75 13.7 6.86 14.5 7.09C16.38 5.76 17.22 6.04 17.22 6.04C17.77 7.45 17.42 8.5 17.32 8.76C17.96 9.49 18.35 10.42 18.35 11.55C18.35 15.54 16.01 16.42 13.79 16.67C14.14 16.97 14.45 17.56 14.45 18.46C14.45 19.75 14.44 20.98 14.44 21.51C14.44 21.79 14.62 22.12 15.12 22.01C19.09 20.65 22 16.79 22 12.26C22 6.59 17.52 2 12 2Z" />
-        </svg>
-      );
-    }
-    if (id === "linkedin") {
-      return (
-        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3C4.17 3 3.31 3.88 3.31 4.97C3.31 6.05 4.17 6.94 5.25 6.94C6.33 6.94 7.19 6.05 7.19 4.97C7.19 3.88 6.33 3 5.25 3ZM20 13.38C20 10.18 18.29 8.25 15.46 8.25C14.1 8.25 13.2 9 12.84 9.53V8.5H9.59V20H12.97V14.31C12.97 12.81 13.25 11.36 15.11 11.36C16.95 11.36 16.98 13.08 16.98 14.4V20H20V13.38Z" />
-        </svg>
-      );
-    }
-    return (
-      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" strokeWidth="1.8" />
-        <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.8" />
-        <circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" />
-      </svg>
-    );
-  };
+  const getSocialIcon = () => (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3C4.17 3 3.31 3.88 3.31 4.97C3.31 6.05 4.17 6.94 5.25 6.94C6.33 6.94 7.19 6.05 7.19 4.97C7.19 3.88 6.33 3 5.25 3ZM20 13.38C20 10.18 18.29 8.25 15.46 8.25C14.1 8.25 13.2 9 12.84 9.53V8.5H9.59V20H12.97V14.31C12.97 12.81 13.25 11.36 15.11 11.36C16.95 11.36 16.98 13.08 16.98 14.4V20H20V13.38Z" />
+    </svg>
+  );
 
   const words = t.hero.headline.split(" ");
 
@@ -146,7 +126,7 @@ export function HeroSection() {
                   whileHover={{ y: -2, scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  {getSocialIcon(social.id)}
+                  {getSocialIcon()}
                   {social.label}
                 </motion.a>
               ))}
