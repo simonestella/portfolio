@@ -23,6 +23,8 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }
 };
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export function HeroSection() {
   const { t } = useLocale();
   const { scrollY } = useScroll();
@@ -167,7 +169,7 @@ export function HeroSection() {
               className="absolute -top-[8%] left-0 right-0 hidden h-[116%] lg:block"
             >
               <Image
-                src="/images/intera-full.jpg"
+                src={`${BASE}/images/intera-full.jpg`}
                 alt="Simone Stella"
                 fill
                 className="object-cover object-top saturate-[0.88]"
@@ -186,7 +188,7 @@ export function HeroSection() {
                 <div className="relative flex items-center gap-3">
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-2 ring-[var(--apple-blue)]/30">
                     <Image
-                      src="/images/profile.jpg"
+                      src={`${BASE}/images/profile.jpg`}
                       alt="Foto profilo Simone Stella"
                       width={96}
                       height={96}
