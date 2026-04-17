@@ -12,7 +12,7 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "Portfolio | Simone Stella",
-  description: "AI Engineer & Full Stack Developer portfolio."
+  description: "Integration Engineer & Full Stack Developer portfolio."
 };
 
 export default function RootLayout({
