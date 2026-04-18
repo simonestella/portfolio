@@ -71,6 +71,7 @@ export const it = {
     successTitle: "Messaggio inviato!",
     successBody: "Grazie per avermi scritto, ti risponderò presto.",
     errorBody: "Qualcosa è andato storto. Riprova tra qualche secondo.",
+    rateLimitBody: "Puoi inviare un altro messaggio tra {s} secondi.",
     close: "Chiudi"
   }
 };

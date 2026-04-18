@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { Button } from "@/components/ui/button";
 
 interface ContactModalProps {
@@ -18,16 +19,56 @@ interface ContactModalProps {
     successTitle: string;
     successBody: string;
     errorBody: string;
+    rateLimitBody: string;
     close: string;
   };
 }
 
-export function ContactModal({ open, onClose, labels }: ContactModalProps) {
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+// Web3Forms public hCaptcha site key
+const HCAPTCHA_SITE_KEY = "REMOVED";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const RATE_LIMIT_MS = 5 * 60 * 1000;
+const LS_KEY = "portfolio_last_contact";
+
+function getRemainingCooldown(): number {
+  const last = localStorage.getItem(LS_KEY);
+  if (!last) return 0;
+  return Math.max(0, RATE_LIMIT_MS - (Date.now() - Number(last)));
+}
+
+export function ContactModal({ open, onClose, labels }: Readonly<ContactModalProps>) {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "ratelimit">("idle");
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [cooldownSec, setCooldownSec] = useState(0);
+  const captchaRef = useRef<HCaptcha>(null);
+
+  const startCooldown = (ms: number) => {
+    setCooldownSec(Math.ceil(ms / 1000));
+    const interval = setInterval(() => {
+      setCooldownSec(s => {
+        if (s <= 1) { clearInterval(interval); setStatus("idle"); return 0; }
+        return s - 1;
+      });
+    }, 1000);
+  };
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!captchaToken) return;
+
+    // Enforce max lengths server-side too — belt-and-suspenders beyond the HTML maxLength attrs
+    if (form.name.length > 100 || form.email.length > 254 || form.message.length > 2000) return;
+    // Basic email structure check beyond browser's type="email"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return;
+
+    const remaining = getRemainingCooldown();
+    if (remaining > 0) {
+      setStatus("ratelimit");
+      startCooldown(remaining);
+      return;
+    }
+
     setStatus("sending");
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
@@ -36,12 +77,23 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
         body: JSON.stringify({
           access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
           ...form,
+          subject: "Nuovo messaggio dal portfolio",
+          "h-captcha-response": captchaToken,
         }),
       });
       const data = await res.json();
-      setStatus(data.success ? "success" : "error");
+      if (data.success) {
+        localStorage.setItem(LS_KEY, String(Date.now()));
+        setStatus("success");
+      } else {
+        setStatus("error");
+        captchaRef.current?.resetCaptcha();
+        setCaptchaToken(null);
+      }
     } catch {
       setStatus("error");
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     }
   };
 
@@ -50,6 +102,8 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
     setTimeout(() => {
       setStatus("idle");
       setForm({ name: "", email: "", message: "" });
+      captchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     }, 300);
   };
 
@@ -137,6 +191,7 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
                       <input
                         type="text"
                         required
+                        maxLength={100}
                         value={form.name}
                         onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                         className="rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--apple-blue)]/50 focus:ring-2 focus:ring-[var(--apple-blue)]/15"
@@ -151,6 +206,7 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
                       <input
                         type="email"
                         required
+                        maxLength={254}
                         value={form.email}
                         onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                         className="rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--apple-blue)]/50 focus:ring-2 focus:ring-[var(--apple-blue)]/15"
@@ -165,9 +221,20 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
                       <textarea
                         required
                         rows={4}
+                        maxLength={2000}
                         value={form.message}
                         onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                         className="resize-none rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--apple-blue)]/50 focus:ring-2 focus:ring-[var(--apple-blue)]/15"
+                      />
+                    </div>
+
+                    {/* hCaptcha */}
+                    <div className="flex justify-center">
+                      <HCaptcha
+                        ref={captchaRef}
+                        sitekey={HCAPTCHA_SITE_KEY}
+                        onVerify={token => setCaptchaToken(token)}
+                        onExpire={() => setCaptchaToken(null)}
                       />
                     </div>
 
@@ -177,11 +244,17 @@ export function ContactModal({ open, onClose, labels }: ContactModalProps) {
                       </p>
                     )}
 
+                    {status === "ratelimit" && (
+                      <p className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-600 dark:text-amber-400">
+                        {labels.rateLimitBody.replace("{s}", String(cooldownSec))}
+                      </p>
+                    )}
+
                     <Button
                       type="submit"
                       size="lg"
-                      disabled={status === "sending"}
-                      className="mt-1 w-full shadow-[0_8px_20px_rgba(0,113,227,0.25)]"
+                      disabled={status === "sending" || !captchaToken}
+                      className="mt-1 w-full shadow-[0_8px_20px_rgba(0,113,227,0.25)] disabled:opacity-40"
                     >
                       {status === "sending" ? labels.sending : labels.send}
                     </Button>

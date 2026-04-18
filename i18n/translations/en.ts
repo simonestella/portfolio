@@ -73,6 +73,7 @@ export const en: Translations = {
     successTitle: "Message sent!",
     successBody: "Thanks for reaching out, I'll reply soon.",
     errorBody: "Something went wrong. Please try again in a moment.",
+    rateLimitBody: "You can send another message in {s} seconds.",
     close: "Close"
   }
 };
