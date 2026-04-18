@@ -24,8 +24,7 @@ interface ContactModalProps {
   };
 }
 
-// Web3Forms public hCaptcha site key
-const HCAPTCHA_SITE_KEY = "REMOVED";
+const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_KEY ?? "";
 
 const RATE_LIMIT_MS = 5 * 60 * 1000;
 const LS_KEY = "portfolio_last_contact";
