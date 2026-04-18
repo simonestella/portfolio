@@ -61,5 +61,18 @@ export const en: Translations = {
     subtitle: "Skills certified by recognized institutions.",
     issuedBy: "Issued by",
     date: "Date"
+  },
+  contact: {
+    title: "Get in touch",
+    subtitle: "I'll get back to you as soon as possible.",
+    name: "Name",
+    email: "Your email",
+    message: "Message",
+    send: "Send message",
+    sending: "Sending…",
+    successTitle: "Message sent!",
+    successBody: "Thanks for reaching out, I'll reply soon.",
+    errorBody: "Something went wrong. Please try again in a moment.",
+    close: "Close"
   }
 };

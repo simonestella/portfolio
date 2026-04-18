@@ -59,6 +59,19 @@ export const it = {
     subtitle: "Competenze certificate da enti riconosciuti.",
     issuedBy: "Emesso da",
     date: "Data"
+  },
+  contact: {
+    title: "Scrivimi",
+    subtitle: "Ti rispondo nel più breve tempo possibile.",
+    name: "Nome",
+    email: "La tua email",
+    message: "Messaggio",
+    send: "Invia messaggio",
+    sending: "Invio in corso…",
+    successTitle: "Messaggio inviato!",
+    successBody: "Grazie per avermi scritto, ti risponderò presto.",
+    errorBody: "Qualcosa è andato storto. Riprova tra qualche secondo.",
+    close: "Chiudi"
   }
 };
 

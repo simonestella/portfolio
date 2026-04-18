@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ContactModal } from "@/components/ui/contact-modal";
 import { useLocale } from "@/i18n";
 import Image from "next/image";
 import { projects } from "@/data/projects";
@@ -25,6 +27,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function HeroSection() {
   const { t } = useLocale();
+  const [contactOpen, setContactOpen] = useState(false);
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 600], [0, 80]);
 
@@ -97,7 +100,7 @@ export function HeroSection() {
                   type="button"
                   size="lg"
                   className="w-full shadow-[0_10px_28px_rgba(0,113,227,0.3)] sm:w-auto"
-                  onClick={() => window.open("mailto:CONTACT_REDACTED", "_self")}
+                  onClick={() => setContactOpen(true)}
                 >
                   {t.hero.ctaContact}
                 </Button>
@@ -211,6 +214,12 @@ export function HeroSection() {
 
         </div>
       </div>
+
+      <ContactModal
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        labels={t.contact}
+      />
     </section>
   );
 }
