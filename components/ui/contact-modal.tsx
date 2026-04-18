@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { Button } from "@/components/ui/button";
 
 interface ContactModalProps {
@@ -24,8 +23,6 @@ interface ContactModalProps {
   };
 }
 
-const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_KEY ?? "";
-
 const RATE_LIMIT_MS = 5 * 60 * 1000;
 const LS_KEY = "portfolio_last_contact";
 
@@ -38,9 +35,7 @@ function getRemainingCooldown(): number {
 export function ContactModal({ open, onClose, labels }: Readonly<ContactModalProps>) {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "ratelimit">("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [cooldownSec, setCooldownSec] = useState(0);
-  const captchaRef = useRef<HCaptcha>(null);
 
   const startCooldown = (ms: number) => {
     setCooldownSec(Math.ceil(ms / 1000));
@@ -54,11 +49,8 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!captchaToken) return;
 
-    // Enforce max lengths server-side too — belt-and-suspenders beyond the HTML maxLength attrs
     if (form.name.length > 100 || form.email.length > 254 || form.message.length > 2000) return;
-    // Basic email structure check beyond browser's type="email"
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return;
 
     const remaining = getRemainingCooldown();
@@ -77,7 +69,6 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
           access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
           ...form,
           subject: "Nuovo messaggio dal portfolio",
-          "h-captcha-response": captchaToken,
         }),
       });
       const data = await res.json();
@@ -86,13 +77,9 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
         setStatus("success");
       } else {
         setStatus("error");
-        captchaRef.current?.resetCaptcha();
-        setCaptchaToken(null);
       }
     } catch {
       setStatus("error");
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     }
   };
 
@@ -101,8 +88,6 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
     setTimeout(() => {
       setStatus("idle");
       setForm({ name: "", email: "", message: "" });
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     }, 300);
   };
 
@@ -227,16 +212,6 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
                       />
                     </div>
 
-                    {/* hCaptcha */}
-                    <div className="flex justify-center">
-                      <HCaptcha
-                        ref={captchaRef}
-                        sitekey={HCAPTCHA_SITE_KEY}
-                        onVerify={token => setCaptchaToken(token)}
-                        onExpire={() => setCaptchaToken(null)}
-                      />
-                    </div>
-
                     {status === "error" && (
                       <p className="rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-2.5 text-xs text-red-500">
                         {labels.errorBody}
@@ -252,8 +227,8 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
                     <Button
                       type="submit"
                       size="lg"
-                      disabled={status === "sending" || !captchaToken}
-                      className="mt-1 w-full shadow-[0_8px_20px_rgba(0,113,227,0.25)] disabled:opacity-40"
+                      disabled={status === "sending"}
+                      className="mt-1 w-full shadow-[0_8px_20px_rgba(0,113,227,0.25)]"
                     >
                       {status === "sending" ? labels.sending : labels.send}
                     </Button>

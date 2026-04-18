@@ -35,7 +35,6 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: "/portfolio"
           NEXT_PUBLIC_WEB3FORMS_KEY: ${{ secrets.WEB3FORMS_KEY }}
-          NEXT_PUBLIC_HCAPTCHA_KEY: ${{ secrets.HCAPTCHA_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
