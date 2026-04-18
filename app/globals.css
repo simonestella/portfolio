@@ -58,6 +58,8 @@ body {
 
 .mesh-bg {
   min-height: 100vh;
+  transform: translateZ(0);
+  transition: transform 0.35s ease;
   background-image:
     radial-gradient(circle at 16% 8%, rgba(0, 113, 227, 0.09), transparent 28%),
     radial-gradient(circle at 84% 10%, rgba(138, 138, 145, 0.1), transparent 34%),
@@ -180,21 +182,18 @@ body {
   top: -200px; right: -100px;
   background: radial-gradient(circle, rgba(0, 113, 227, 0.10) 0%, transparent 70%);
   filter: blur(70px);
-  animation: orb-drift-1 30s ease-in-out infinite;
 }
 .bg-orb-2 {
   width: 520px; height: 520px;
   top: 52%; left: -140px;
   background: radial-gradient(circle, rgba(100, 50, 220, 0.07) 0%, transparent 70%);
   filter: blur(80px);
-  animation: orb-drift-2 38s ease-in-out infinite;
 }
 .bg-orb-3 {
   width: 420px; height: 420px;
   bottom: 12%; right: 6%;
   background: radial-gradient(circle, rgba(0, 180, 130, 0.05) 0%, transparent 70%);
   filter: blur(65px);
-  animation: orb-drift-3 24s ease-in-out infinite;
 }
 .dark .bg-orb-1 {
   background: radial-gradient(circle, rgba(41, 151, 255, 0.09) 0%, transparent 70%);
@@ -204,6 +203,15 @@ body {
 }
 .dark .bg-orb-3 {
   background: radial-gradient(circle, rgba(0, 210, 150, 0.05) 0%, transparent 70%);
+}
+
+/* ─── Modal open: scale+dim content instead of backdrop-filter blur ─── */
+body:has([data-modal-open]) {
+  overflow: hidden;
+}
+
+body:has([data-modal-open]) .mesh-bg {
+  transform: scale(1.018) translateZ(0);
 }
 
 /* ─── Custom cursor (fine pointer only) ─── */
@@ -216,11 +224,11 @@ body {
 .container-shell {
   margin: 0 auto;
   max-width: 72rem;
-  padding: 2rem 1.5rem 6rem;
+  padding: 1rem 1.5rem 6rem;
 }
 
 @media (min-width: 640px) {
   .container-shell {
-    padding: 2.5rem 2.5rem 7rem;
+    padding: 1.5rem 2.5rem 7rem;
   }
 }

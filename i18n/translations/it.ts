@@ -7,8 +7,8 @@ export const it = {
   },
   hero: {
     badge: "ATTUALE: Integration Engineer",
-    headline: "Costruisco prodotti intelligenti con codice pulito, design chiaro e attenzione al dettaglio.",
-    description: "Seleziono stack moderni e scelte architetturali pragmatiche per sviluppare esperienze solide in ambito IA, MuleSoft e molto altro.",
+    headline: "Ciao, sono Simone — costruisco prodotti digitali con codice pulito, design curato e tanta attenzione al dettaglio.",
+    description: "Lavoro con stack moderni e architetture pragmatiche per creare esperienze solide nel campo dell'IA, MuleSoft e non solo.",
     ctaContact: "Contattami",
     ctaProjects: "Vedi progetti",
     profileLabel: "Profilo",

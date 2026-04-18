@@ -9,8 +9,8 @@ export const en: Translations = {
   },
   hero: {
     badge: "CURRENT: Integration Engineer",
-    headline: "I build intelligent products with clean code, clear design and attention to detail.",
-    description: "I select modern stacks and pragmatic architectural choices to develop solid experiences in AI, MuleSoft and much more.",
+    headline: "Hey, I'm Simone — I build digital products with clean code, sharp design and care for every detail.",
+    description: "I work with modern stacks and pragmatic architecture to build solid experiences in AI, MuleSoft and beyond.",
     ctaContact: "Contact me",
     ctaProjects: "View projects",
     profileLabel: "Profile",

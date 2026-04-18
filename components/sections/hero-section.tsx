@@ -1,13 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ContactModal } from "@/components/ui/contact-modal";
 import { useLocale } from "@/i18n";
+import type { Locale } from "@/lib/types";
 import Image from "next/image";
 import { projects } from "@/data/projects";
+
+function SunIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const socials = [
   { id: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/work-simone-stella/" },
@@ -26,10 +51,11 @@ const itemVariants = {
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function HeroSection() {
-  const { t } = useLocale();
+  const { t, locale, setLocale } = useLocale();
+  const { theme, setTheme } = useTheme();
   const [contactOpen, setContactOpen] = useState(false);
-  const { scrollY } = useScroll();
-  const bgY = useTransform(scrollY, [0, 600], [0, 80]);
+  const [mounted, setMounted] = useState(false);
+useEffect(() => setMounted(true), []);
 
   const handleViewProjects = () => {
     document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -43,8 +69,45 @@ export function HeroSection() {
 
   const words = t.hero.headline.split(" ");
 
+  const isDark = theme === "dark";
+
   return (
-    <section className="relative mb-20 pt-6 sm:mb-28 sm:pt-10">
+    <section className="relative mb-12 pt-2 sm:mb-16 sm:pt-4">
+      {/* ── Top bar: name + controls ── */}
+      <div className="mb-4 flex items-center justify-between sm:mb-6">
+        <span className="text-sm font-semibold tracking-tight text-[var(--ink)]">
+          {t.nav.name}
+        </span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-full border border-[var(--surface-border)] bg-[var(--card-bg)] p-0.5">
+            {(["it", "en"] as Locale[]).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setLocale(lang)}
+                className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest transition-all ${
+                  locale === lang
+                    ? "bg-[var(--apple-blue)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:text-[var(--ink)]"
+                }`}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+          {mounted && (
+            <button
+              type="button"
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              aria-label={isDark ? t.nav.toggleLight : t.nav.toggleDark}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--surface-border)] bg-[var(--card-bg)] text-[var(--ink)] transition-colors hover:bg-[var(--surface)]"
+            >
+              {isDark ? <SunIcon /> : <MoonIcon />}
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Outer wrapper — border + shadow only, no backdrop-filter here */}
       <div className="overflow-hidden rounded-[1.4rem] border border-[var(--surface-border)] shadow-[0_18px_40px_rgba(17,17,21,0.08),0_2px_12px_rgba(17,17,21,0.03)]">
         <div className="flex flex-col lg:flex-row lg:items-stretch">
@@ -54,7 +117,7 @@ export function HeroSection() {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-1 flex-col gap-6 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-end)] p-6 backdrop-blur-[16px] sm:gap-8 sm:p-10 lg:p-12"
+            className="flex flex-1 flex-col gap-6 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-end)] p-6 sm:gap-8 sm:p-10 lg:p-12"
           >
             <motion.div variants={itemVariants}>
               <Badge
@@ -136,79 +199,61 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* ── RIGHT: photo on desktop, glass panel on mobile ── */}
+          {/* ── RIGHT: profile panel ── */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-            className="relative overflow-hidden border-t border-[var(--surface-border)] lg:w-[340px] lg:shrink-0 lg:border-t-0"
+            className="relative overflow-hidden border-t border-[var(--surface-border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-end)] lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0"
           >
-            {/* Mobile: same glass background as left panel */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--surface)] to-[var(--surface-end)] backdrop-blur-[16px] lg:hidden" />
+            <div className="flex h-full flex-col justify-center gap-4 p-6 lg:p-8">
 
-            {/* Desktop only: full-body parallax photo */}
-            <motion.div
-              style={{ y: bgY }}
-              className="absolute -top-[8%] left-0 right-0 hidden h-[116%] lg:block"
-            >
-              <Image
-                src={`${BASE}/images/intera-full.jpg`}
-                alt="Simone Stella"
-                fill
-                className="object-cover object-top saturate-[0.88]"
-                priority
-              />
-              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--surface)] to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[var(--surface)]/80 to-transparent" />
-              <div className="absolute inset-0 bg-[var(--apple-blue)]/6" />
-            </motion.div>
-
-            {/* Cards — stacked on mobile, floated at bottom on desktop */}
-            <div className="relative z-10 flex flex-col gap-3 p-5 lg:h-full lg:justify-end">
-              {/* Profile card — blue gradient accent */}
-              <div className="relative overflow-hidden rounded-2xl border border-[var(--apple-blue)]/25 bg-gradient-to-br from-[var(--apple-blue)]/20 via-white/88 to-white/75 p-3 shadow-[0_8px_24px_rgba(0,113,227,0.18)] backdrop-blur-md dark:from-[#1a3a6e]/35 dark:via-black/55 dark:to-black/45">
-                <div className="absolute -left-4 -top-4 h-16 w-16 rounded-full bg-[var(--apple-blue)]/20 blur-2xl" />
-                <div className="relative flex items-center gap-3">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-2 ring-[var(--apple-blue)]/30">
+              {/* Profile card — avatar centered, vertical layout */}
+              <div className="relative overflow-hidden rounded-2xl border border-[var(--apple-blue)]/20 bg-gradient-to-br from-[var(--apple-blue)]/12 via-white/92 to-white/72 p-5 shadow-[0_8px_28px_rgba(0,113,227,0.13)] dark:from-[#1a3a6e]/40 dark:via-black/60 dark:to-black/45">
+                <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[var(--apple-blue)]/12 blur-3xl" />
+                <div className="relative flex flex-col items-center gap-3 text-center">
+                  <div className="h-28 w-28 overflow-hidden rounded-2xl shadow-[0_8px_24px_rgba(0,113,227,0.22)] ring-2 ring-[var(--apple-blue)]/30">
                     <Image
-                      src={`${BASE}/images/profile.jpg`}
-                      alt="Foto profilo Simone Stella"
-                      width={96}
-                      height={96}
+                      src={`${BASE}/images/avatar.png`}
+                      alt="Simone Stella"
+                      width={224}
+                      height={224}
                       className="h-full w-full object-cover"
+                      priority
                     />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--apple-blue)]">
+                  <div className="space-y-0.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--apple-blue)]">
                       {t.hero.profileLabel}
                     </p>
-                    <p className="text-sm font-semibold leading-snug text-[var(--ink)]">
+                    <p className="text-[15px] font-semibold leading-snug text-[var(--ink)]">
                       {t.hero.profileRole}
                     </p>
-                    <p className="mt-0.5 text-xs text-[var(--ink-3)]">{t.hero.profileMotto}</p>
+                    <p className="text-xs leading-relaxed text-[var(--ink-3)]">{t.hero.profileMotto}</p>
                   </div>
                 </div>
               </div>
 
               {/* Stat cards */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/50 bg-white/88 px-3 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.10)] backdrop-blur-md dark:border-white/14 dark:bg-black/52">
-                  <p className="text-[11px] font-medium text-[var(--muted)]">{t.hero.statsProjects}</p>
-                  <p className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-[var(--ink)]">{projects.length}</p>
+                <div className="flex flex-col gap-1.5 rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">{t.hero.statsProjects}</p>
+                  <p className="text-3xl font-bold tabular-nums tracking-tight text-[var(--ink)]">{projects.length}</p>
                 </div>
-                <div className="rounded-xl border border-white/50 bg-white/88 px-3 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.10)] backdrop-blur-md dark:border-white/14 dark:bg-black/52">
-                  <p className="text-[11px] font-medium text-[var(--muted)]">{t.hero.statsStack}</p>
-                  <p className="mt-1 text-sm font-semibold leading-snug text-[var(--ink)]">{t.hero.stackValue}</p>
+                <div className="flex flex-col gap-1.5 rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-4 shadow-sm">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted)]">{t.hero.statsStack}</p>
+                  <p className="text-sm font-semibold leading-snug text-[var(--ink)]">{t.hero.stackValue}</p>
                 </div>
               </div>
 
-              {/* Focus card — blue gradient accent */}
-              <div className="rounded-xl border border-[var(--apple-blue)]/30 bg-gradient-to-br from-[var(--apple-blue)]/18 via-white/85 to-white/72 px-4 py-3 shadow-[0_4px_16px_rgba(0,113,227,0.14)] backdrop-blur-md dark:from-[#1a3a6e]/35 dark:via-black/52 dark:to-black/42">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--apple-blue)]">
+              {/* Focus card */}
+              <div className="rounded-xl border border-[var(--apple-blue)]/22 bg-gradient-to-br from-[var(--apple-blue)]/10 via-white/88 to-white/68 px-5 py-4 dark:from-[#1a3a6e]/30 dark:via-black/50 dark:to-black/40">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--apple-blue)]">
                   {t.hero.focusLabel}
                 </p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[var(--ink)]">{t.hero.focusText}</p>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--ink)]">{t.hero.focusText}</p>
               </div>
+
             </div>
           </motion.div>
 

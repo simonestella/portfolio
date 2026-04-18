@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { AppProviders } from "@/providers/app-providers";
-import { Navbar } from "@/components/layout/navbar";
 import { CustomCursor } from "@/components/shared/custom-cursor";
 import "./globals.css";
 
@@ -19,21 +18,16 @@ export const metadata: Metadata = {
   },
 };
 
+const isDev = process.env.NODE_ENV === "development";
+
 const csp = [
   "default-src 'self'",
-  // Next.js requires unsafe-inline for its runtime hydration scripts
-  "script-src 'self' 'unsafe-inline' https://js.hcaptcha.com https://newassets.hcaptcha.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  // Geist font is self-hosted at build time by next/font — no external font CDN needed
   "font-src 'self'",
   "img-src 'self' data: blob:",
-  // Allow fetching only the services this site actually uses
-  "connect-src 'self' https://api.web3forms.com https://hcaptcha.com https://*.hcaptcha.com",
-  // hCaptcha renders inside an iframe
-  "frame-src https://hcaptcha.com https://*.hcaptcha.com",
-  // Block Flash, Java, and all legacy plugin types entirely
+  "connect-src 'self' https://api.web3forms.com",
   "object-src 'none'",
-  // Prevent base-tag injection attacks
   "base-uri 'self'",
 ].join("; ");
 
@@ -53,7 +47,6 @@ export default function RootLayout({
           <div className="bg-orb bg-orb-2" aria-hidden />
           <div className="bg-orb bg-orb-3" aria-hidden />
           <div className="mesh-bg">
-            <Navbar />
             {children}
           </div>
         </AppProviders>

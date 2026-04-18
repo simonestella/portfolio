@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ type ProjectCardProps = {
   project: ProjectItem;
 };
 
-function Icon({ type }: { type: ProjectItem["icon"] }) {
+function Icon({ type }: Readonly<{ type: ProjectItem["icon"] }>) {
   const baseClasses = "h-6 w-6 text-[var(--apple-blue)]";
 
   if (type === "spark") {
@@ -54,18 +54,24 @@ function Icon({ type }: { type: ProjectItem["icon"] }) {
   );
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project }: Readonly<ProjectCardProps>) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { locale, t } = useLocale();
   const inProgress = isProjectInProgress(project);
+  const rafRef = useRef<number | null>(null);
 
   const onMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - bounds.left;
-    const y = event.clientY - bounds.top;
-    event.currentTarget.style.setProperty("--mouse-x", `${x}px`);
-    event.currentTarget.style.setProperty("--mouse-y", `${y}px`);
+    if (rafRef.current !== null) return;
+    const el = event.currentTarget;
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const bounds = el.getBoundingClientRect();
+      el.style.setProperty("--mouse-x", `${clientX - bounds.left}px`);
+      el.style.setProperty("--mouse-y", `${clientY - bounds.top}px`);
+    });
   };
 
   useEffect(() => {
@@ -162,11 +168,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       {isMounted && isOpen
         ? createPortal(
-            <div className="fixed inset-0 z-[90] flex items-center justify-center px-4 py-8 sm:px-6">
+            <div data-modal-open className="fixed inset-0 z-[90] flex items-center justify-center px-4 py-8 sm:px-6">
               <button
                 type="button"
                 aria-label={t.projects.closeLabel}
-                className="absolute inset-0 cursor-pointer bg-[#0b1020]/60 backdrop-blur-sm"
+                className="absolute inset-0 cursor-pointer bg-[#0b1020]/72"
                 onClick={() => setIsOpen(false)}
               />
 
