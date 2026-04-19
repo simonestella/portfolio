@@ -15,6 +15,29 @@ export type ProjectItem = {
 
 export const projects: ProjectItem[] = [
   {
+    id: "reboot",
+    title: { it: "Reboot — Piano di Allenamento", en: "Reboot — Fitness Plan" },
+    description: {
+      it: "PWA Next.js con timeline di 24 ore, esercizi interattivi e un indicatore live 'Sei qui!' aggiornato ogni minuto.",
+      en: "Next.js PWA with a 24-hour workout timeline, interactive exercises and a live 'You are here!' marker updated every minute."
+    },
+    longDescription: {
+      it: "Reboot è una Progressive Web App costruita con Next.js e Framer Motion che mostra un piano di allenamento giornaliero su una timeline di 24 ore. L'indicatore 'Sei qui!' si aggiorna ogni minuto e scompare durante gli slot attivi, evidenziati con animazioni pulse. Ogni esercizio si apre in un modal dettagliato con serie, ripetizioni e istruzioni passo-passo. Supporto bilingue IT/EN, dark mode, icone PWA native per iOS e Android, CSP header e deploy statico automatico su GitHub Pages tramite Actions.",
+      en: "Reboot is a Progressive Web App built with Next.js and Framer Motion displaying a daily workout schedule on a 24-hour timeline. The 'You are here!' marker updates every minute and disappears during active exercise slots, which pulse to highlight the current activity. Each exercise opens a detailed modal with sets, reps and step-by-step instructions. Features include IT/EN bilingual support, dark mode, native PWA icons for iOS and Android, a Content Security Policy header, and automated static deployment to GitHub Pages via Actions."
+    },
+    startDate: { it: "Apr 2025", en: "Apr 2025" },
+    endDate: { it: "Apr 2025", en: "Apr 2025" },
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    contributions: [
+      { it: "Costruzione della timeline in tempo reale con indicatore 'Sei qui!' basato su useMemo e setInterval, con gestione degli edge case notturni (00:00–06:30, 22:30+).", en: "Built the real-time timeline with a 'You are here!' marker driven by useMemo and setInterval, handling overnight edge cases (00:00–06:30, 22:30+)." },
+      { it: "Progettazione del sistema di esercizi con modal dettagliati (createPortal per uscire dal contesto transform), schede interattive e istruzioni bilingue IT/EN.", en: "Designed the exercise system with detailed modals (createPortal to escape the transform context), interactive cards, and bilingual IT/EN step-by-step instructions." },
+      { it: "Implementazione PWA completa: apple-icon 180×180 generata via ImageResponse, manifest con icone, supporto iOS con appleWebApp metadata e postbuild script per GitHub Pages.", en: "Implemented full PWA support: 180×180 apple-icon generated via ImageResponse, manifest with icons, iOS appleWebApp metadata, and a postbuild script for GitHub Pages static export compatibility." },
+      { it: "UI responsive mobile-first con Tailwind CSS, dark mode nativo, cursore dot+ring con i colori brand, back-to-top tramite createPortal e CSP header strict.", en: "Built a mobile-first responsive UI with Tailwind CSS, native dark mode, brand-colored dot+ring cursor, createPortal-based back-to-top button, and a strict Content Security Policy header." }
+    ],
+    icon: "globe",
+    groups: ["Web"]
+  },
+  {
     id: "ai-clash-royale",
     title: { it: "IA Clash Royale", en: "AI Player on Clash Royale" },
     description: {
@@ -164,15 +187,15 @@ export const projects: ProjectItem[] = [
     },
     startDate: { it: "Ott 2022", en: "Oct 2022" },
     endDate: { it: "Nov 2022", en: "Nov 2022" },
-    technologies: ["Java 17", "Swing", "H2 Database", "FlatLaf", "OpenPDF", "AI‑Generated Code"],
+    technologies: ["Java 17", "Swing", "H2 Database", "FlatLaf", "OpenPDF"],
     contributions: [
       { it: "Implementazione completa del modello di automa logico in Datalog tramite pyDatalog.", en: "Implemented the full Datalog logic model using pyDatalog." },
       { it: "Sviluppo della pipeline di computer vision per estrarre fatti logici dalla board.", en: "Built the computer‑vision pipeline to extract logical facts from the game board." },
       { it: "Progettazione del ciclo decisionale sense–think–act con regole tattiche e strategiche.", en: "Designed the sense–think–act decision loop with tactical and strategic rules." },
-      { it: "Integrazione dei moduli e ottimizzazione delle prestazioni in tempo reale. Nota IA: usata solo per supporto grafico e mockup UI.", en: "Integrated all modules and optimized real‑time performance. AI Note: used only for UI mockups and visual suggestions." }
+      { it: "Integrazione dei moduli e ottimizzazione delle prestazioni in tempo reale.", en: "Integrated all modules and optimized real‑time performance." }
     ],
     icon: "code",
-    groups: ["Java", "AI"]
+    groups: ["Java"]
   },
   {
     id: "alimentari-management",
@@ -194,7 +217,7 @@ export const projects: ProjectItem[] = [
       { it: "Configurazione del database MySQL su Altervista e integrazione con il sito.", en: "Configured the MySQL database on Altervista and integrated it with the website." },
       { it: "Deploy completo del progetto su Altervista, con ottimizzazione delle performance.", en: "Fully deployed the project on Altervista with performance optimizations." }
     ],
-    icon: "code",
+    icon: "globe",
     groups: ["Web", "PHP"]
   }
 ];
