@@ -9,6 +9,7 @@ export type ProjectItem = {
   endDate?: LocalizedText;
   technologies?: string[];
   contributions?: LocalizedText[];
+  url?: string;
   icon: "spark" | "code" | "globe";
   groups: string[];
 };
@@ -34,6 +35,7 @@ export const projects: ProjectItem[] = [
       { it: "Implementazione PWA completa: apple-icon 180×180 generata via ImageResponse, manifest con icone, supporto iOS con appleWebApp metadata e postbuild script per GitHub Pages.", en: "Implemented full PWA support: 180×180 apple-icon generated via ImageResponse, manifest with icons, iOS appleWebApp metadata, and a postbuild script for GitHub Pages static export compatibility." },
       { it: "UI responsive mobile-first con Tailwind CSS, dark mode nativo, cursore dot+ring con i colori brand, back-to-top tramite createPortal e CSP header strict.", en: "Built a mobile-first responsive UI with Tailwind CSS, native dark mode, brand-colored dot+ring cursor, createPortal-based back-to-top button, and a strict Content Security Policy header." }
     ],
+    url: "https://simonestella.github.io/reboot/",
     icon: "globe",
     groups: ["Web"]
   },

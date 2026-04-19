@@ -169,11 +169,27 @@ function ProjectTimelineItem({ project, locale, t }: Readonly<{
             </div>
           )}
 
-          <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-[var(--apple-blue)] transition-all group-hover:gap-2">
-            {t.projects.discoverMore}
-            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M5 12H19M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-1 text-[11px] font-semibold text-[var(--apple-blue)] transition-all group-hover:gap-2">
+              {t.projects.discoverMore}
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M5 12H19M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            {project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[11px] font-semibold text-[var(--muted)] transition-colors hover:text-[var(--apple-blue)]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Live
+              </a>
+            )}
           </div>
         </button>
       </motion.div>
@@ -236,6 +252,21 @@ function ProjectTimelineItem({ project, locale, t }: Readonly<{
                   ))}
                 </ul>
               </div>
+
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 rounded-xl border border-[var(--apple-blue)]/30 bg-[var(--apple-blue)]/8 px-4 py-3 text-sm font-semibold text-[var(--apple-blue)] transition-all hover:bg-[var(--apple-blue)]/14 hover:border-[var(--apple-blue)]/50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {project.url}
+                </a>
+              )}
             </div>
           </motion.div>
         </div>,
