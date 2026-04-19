@@ -16,6 +16,42 @@ export type ProjectItem = {
 
 export const projects: ProjectItem[] = [
   {
+    id: "ignis",
+    title: { it: "Ignis — Mappa Interattiva Vulcani", en: "Ignis — Interactive Volcano Map" },
+    description: {
+      it: "Mappa mondiale interattiva dei vulcani attivi con dati USGS aggiornati ogni giorno, filtri per continente e paese, e marcatori dinamici per quota e livello di monitoraggio.",
+      en: "Interactive world map of active volcanoes with daily USGS data, filters by continent and country, and dynamic markers scaled by elevation and monitoring level."
+    },
+    longDescription: {
+      it: "Ignis è una PWA Next.js che visualizza i vulcani del mondo su una mappa Leaflet interattiva, usando dati USGS GVP aggiornati quotidianamente e memorizzati in localStorage come cache giornaliera. Ogni marcatore scala in dimensione in base alla quota del vulcano e cambia colore in base all'osservatorio USGS che lo monitora (AVO, HVO, CVO e altri). I filtri a cascata per continente, paese e stato di monitoraggio permettono di esplorare l'intera raccolta in modo preciso. Include una loading screen animata page-level, dark/light mode automatica in base all'orario, cursore personalizzato, back-to-top e deploy statico su GitHub Pages via Actions.",
+      en: "Ignis is a Next.js PWA that displays the world's volcanoes on an interactive Leaflet map, pulling USGS GVP data once daily and caching it in localStorage. Each marker scales by the volcano's elevation and changes color based on the USGS observatory monitoring it (AVO, HVO, CVO, etc.). Cascading filters for continent, country and monitoring status let users explore the full dataset precisely. Features include an animated page-level loading screen, automatic time-based dark/light mode, custom cursor, back-to-top, and static deployment to GitHub Pages via Actions."
+    },
+    startDate: { it: "Apr 2026", en: "Apr 2026" },
+    endDate: { it: "Apr 2026", en: "Apr 2026" },
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "React Leaflet", "USGS GVP API"],
+    contributions: [
+      {
+        it: "Implementazione della mappa interattiva con React Leaflet e tile CartoDB (light/dark), con marcatori circolari che scalano in dimensione per quota e cambiano colore per osservatorio USGS.",
+        en: "Built the interactive map with React Leaflet and CartoDB tiles (light/dark), using circular markers that scale by elevation and change color by USGS observatory."
+      },
+      {
+        it: "Sistema di fetch e cache giornaliera tramite localStorage: la chiamata all'API USGS GVP avviene una sola volta al giorno, con retry automatico in caso di errore.",
+        en: "Implemented a daily fetch-and-cache system via localStorage: the USGS GVP API call runs once a day, with automatic retry on error."
+      },
+      {
+        it: "Filtri multi-livello a cascata per continente, paese e stato di monitoraggio, con conteggio dinamico dei risultati e reset automatico alla selezione superiore.",
+        en: "Built cascading multi-level filters for continent, country and monitoring status, with dynamic result counts and automatic reset on parent selection change."
+      },
+      {
+        it: "Loading screen animata page-level con VolcanoDataProvider condiviso che copre il fetch iniziale e si dissolve con transizione fluida una volta che i dati sono pronti.",
+        en: "Added an animated page-level loading screen backed by a shared VolcanoDataProvider that covers the initial fetch and fades out smoothly once data is ready."
+      }
+    ],
+    url: "https://simonestella.github.io/ignis/",
+    icon: "globe",
+    groups: ["Web"]
+  },
+  {
     id: "reboot",
     title: { it: "Reboot — Piano di Allenamento", en: "Reboot — Fitness Plan" },
     description: {
