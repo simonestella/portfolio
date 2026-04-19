@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, animate } from "framer-motion";
 
 export function CustomCursor() {
+  const [isActive, setIsActive] = useState(false);
+
   const x = useMotionValue(-200);
   const y = useMotionValue(-200);
   const ringX = useSpring(x, { damping: 22, stiffness: 280, mass: 0.5 });
@@ -23,6 +25,7 @@ export function CustomCursor() {
 
   useEffect(() => {
     if (!globalThis.matchMedia("(pointer: fine)").matches) return;
+    setIsActive(true);
 
     const onMove = (e: MouseEvent) => {
       x.set(e.clientX);
@@ -61,6 +64,8 @@ export function CustomCursor() {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
   }, [x, y, dotOpacity, ringOpacity, dotWidth, dotHeight, dotScale, ringWidth, ringHeight, ringBg]);
+
+  if (!isActive) return null;
 
   return (
     <>

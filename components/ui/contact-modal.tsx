@@ -132,9 +132,9 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
               <button
                 onClick={handleClose}
                 aria-label={labels.close}
-                className="ml-4 mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--card-bg)] text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--ink)]"
+                className="ml-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--card-bg)] text-[var(--muted)] transition hover:bg-[var(--surface)] hover:text-[var(--ink)]"
               >
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
               </button>
