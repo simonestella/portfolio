@@ -50,22 +50,22 @@ const itemVariants = {
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+const LinkedInIcon = () => (
+  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3C4.17 3 3.31 3.88 3.31 4.97C3.31 6.05 4.17 6.94 5.25 6.94C6.33 6.94 7.19 6.05 7.19 4.97C7.19 3.88 6.33 3 5.25 3ZM20 13.38C20 10.18 18.29 8.25 15.46 8.25C14.1 8.25 13.2 9 12.84 9.53V8.5H9.59V20H12.97V14.31C12.97 12.81 13.25 11.36 15.11 11.36C16.95 11.36 16.98 13.08 16.98 14.4V20H20V13.38Z" />
+  </svg>
+);
+
 export function HeroSection() {
   const { t, locale, setLocale } = useLocale();
   const { theme, setTheme } = useTheme();
   const [contactOpen, setContactOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
   const handleViewProjects = () => {
     document.getElementById("projects")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-
-  const getSocialIcon = () => (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M6.94 8.5H3.56V20H6.94V8.5ZM5.25 3C4.17 3 3.31 3.88 3.31 4.97C3.31 6.05 4.17 6.94 5.25 6.94C6.33 6.94 7.19 6.05 7.19 4.97C7.19 3.88 6.33 3 5.25 3ZM20 13.38C20 10.18 18.29 8.25 15.46 8.25C14.1 8.25 13.2 9 12.84 9.53V8.5H9.59V20H12.97V14.31C12.97 12.81 13.25 11.36 15.11 11.36C16.95 11.36 16.98 13.08 16.98 14.4V20H20V13.38Z" />
-    </svg>
-  );
 
   const words = t.hero.headline.split(" ");
 
@@ -192,7 +192,7 @@ useEffect(() => setMounted(true), []);
                   whileHover={{ y: -2, scale: 1.04 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  {getSocialIcon()}
+                  <LinkedInIcon />
                   {social.label}
                 </motion.a>
               ))}

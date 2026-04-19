@@ -147,30 +147,7 @@ body {
   mix-blend-mode: normal;
 }
 
-.glass-card.hero-glass {
-  overflow: visible;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.28));
-}
-.dark .glass-card.hero-glass {
-  background: linear-gradient(145deg, rgba(22, 22, 30, 0.62), rgba(16, 16, 24, 0.42));
-}
-
 /* ─── Floating ambient orbs ─── */
-@keyframes orb-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  30% { transform: translate(40px, -35px) scale(1.06); }
-  70% { transform: translate(-22px, 20px) scale(0.94); }
-}
-@keyframes orb-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  45% { transform: translate(-45px, 32px) scale(1.09); }
-  75% { transform: translate(28px, -22px) scale(0.97); }
-}
-@keyframes orb-drift-3 {
-  0%, 100% { transform: translate(0, 0); }
-  55% { transform: translate(35px, 45px); }
-}
-
 .bg-orb {
   position: fixed;
   border-radius: 50%;

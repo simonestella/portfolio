@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -36,6 +37,8 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "ratelimit">("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [cooldownSec, setCooldownSec] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const startCooldown = (ms: number) => {
     setCooldownSec(Math.ceil(ms / 1000));
@@ -91,7 +94,9 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
     }, 300);
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -114,7 +119,7 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-4 top-[50%] z-50 mx-auto max-w-md -translate-y-1/2 overflow-hidden rounded-[1.4rem] border border-[var(--modal-border)] bg-gradient-to-br from-[var(--modal-bg)] to-[var(--modal-bg-end)] shadow-[0_32px_64px_rgba(0,0,0,0.22),0_2px_16px_rgba(0,0,0,0.12)] sm:inset-x-0"
+            className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[1.4rem] border border-[var(--modal-border)] bg-gradient-to-br from-[var(--modal-bg)] to-[var(--modal-bg-end)] shadow-[0_32px_64px_rgba(0,0,0,0.22),0_2px_16px_rgba(0,0,0,0.12)]"
           >
             {/* Header */}
             <div className="relative flex items-start justify-between border-b border-[var(--surface-border)] px-6 py-5">
@@ -240,6 +245,7 @@ export function ContactModal({ open, onClose, labels }: Readonly<ContactModalPro
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

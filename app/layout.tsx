@@ -29,6 +29,7 @@ const csp = [
   "connect-src 'self' https://api.web3forms.com",
   "object-src 'none'",
   "base-uri 'self'",
+  "frame-ancestors 'none'",
 ].join("; ");
 
 export default function RootLayout({
