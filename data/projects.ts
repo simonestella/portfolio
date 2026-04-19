@@ -25,8 +25,8 @@ export const projects: ProjectItem[] = [
       it: "Reboot è una Progressive Web App costruita con Next.js e Framer Motion che mostra un piano di allenamento giornaliero su una timeline di 24 ore. L'indicatore 'Sei qui!' si aggiorna ogni minuto e scompare durante gli slot attivi, evidenziati con animazioni pulse. Ogni esercizio si apre in un modal dettagliato con serie, ripetizioni e istruzioni passo-passo. Supporto bilingue IT/EN, dark mode, icone PWA native per iOS e Android, CSP header e deploy statico automatico su GitHub Pages tramite Actions.",
       en: "Reboot is a Progressive Web App built with Next.js and Framer Motion displaying a daily workout schedule on a 24-hour timeline. The 'You are here!' marker updates every minute and disappears during active exercise slots, which pulse to highlight the current activity. Each exercise opens a detailed modal with sets, reps and step-by-step instructions. Features include IT/EN bilingual support, dark mode, native PWA icons for iOS and Android, a Content Security Policy header, and automated static deployment to GitHub Pages via Actions."
     },
-    startDate: { it: "Apr 2025", en: "Apr 2025" },
-    endDate: { it: "Apr 2025", en: "Apr 2025" },
+    startDate: { it: "Apr 2026", en: "Apr 2026" },
+    endDate: { it: "Apr 2026", en: "Apr 2026" },
     technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion"],
     contributions: [
       { it: "Costruzione della timeline in tempo reale con indicatore 'Sei qui!' basato su useMemo e setInterval, con gestione degli edge case notturni (00:00–06:30, 22:30+).", en: "Built the real-time timeline with a 'You are here!' marker driven by useMemo and setInterval, handling overnight edge cases (00:00–06:30, 22:30+)." },
