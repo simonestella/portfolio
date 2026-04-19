@@ -10,8 +10,24 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://simonestella.github.io/portfolio"),
   title: "Portfolio | Simone Stella",
   description: "Integration Engineer & Full Stack Developer portfolio.",
+  icons: {
+    icon: "/images/avatar.png",
+    apple: "/images/avatar.png",
+  },
+  openGraph: {
+    title: "Portfolio | Simone Stella",
+    description: "Integration Engineer & Full Stack Developer portfolio.",
+    images: [{ url: "/images/avatar.png", width: 400, height: 400, alt: "Simone Stella" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "Portfolio | Simone Stella",
+    description: "Integration Engineer & Full Stack Developer portfolio.",
+    images: ["/images/avatar.png"],
+  },
   other: {
     // Prevents the browser from leaking the full URL when navigating to external sites
     referrer: "strict-origin-when-cross-origin",
