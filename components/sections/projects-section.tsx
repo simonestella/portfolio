@@ -181,7 +181,7 @@ function ProjectTimelineItem({ project, locale, t }: Readonly<{
                 href={project.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[11px] font-semibold text-[var(--muted)] transition-colors hover:text-[var(--apple-blue)]"
+                className="flex items-center gap-1 rounded-full border border-[var(--surface-border)] bg-[var(--card-bg)] px-2.5 py-1 text-[11px] font-semibold text-[var(--muted)] transition-all hover:border-[var(--apple-blue)]/50 hover:bg-[var(--apple-blue)]/10 hover:text-[var(--apple-blue)]"
                 onClick={(e) => e.stopPropagation()}
               >
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden>
