@@ -9,13 +9,15 @@ const geist = Geist({
   variable: "--font-geist"
 });
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://simonestella.github.io/portfolio"),
   title: "Portfolio | Simone Stella",
   description: "Integration Engineer & Full Stack Developer portfolio.",
   icons: {
-    icon: "/images/avatar.png",
-    apple: "/images/avatar.png",
+    icon: `${basePath}/images/avatar.png`,
+    apple: `${basePath}/images/avatar.png`,
   },
   openGraph: {
     title: "Portfolio | Simone Stella",
