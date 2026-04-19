@@ -57,6 +57,7 @@ export default function RootLayout({
     <html lang="it" suppressHydrationWarning>
       <head>
         <meta httpEquiv="Content-Security-Policy" content={csp} />
+        <link rel="apple-touch-icon" sizes="180x180" href={`${basePath}/images/avatar.png`} />
       </head>
       <body className={`${geist.variable} antialiased`}>
         <AppProviders>

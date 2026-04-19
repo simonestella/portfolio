@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ProjectCard } from "@/components/shared/project-card";
 import { SectionReveal } from "@/components/shared/section-reveal";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { getProjectGroups, getProjectsByGroup } from "@/data/projects";
+import { getProjectGroups, getProjectsByGroup, isProjectInProgress, type ProjectItem } from "@/data/projects";
 import { experienceTimeline } from "@/data/experience";
 import { studyTimeline } from "@/data/education";
 import { certificates } from "@/data/certificates";
@@ -48,7 +47,7 @@ export function ProjectsSection() {
               type="button"
               onClick={() => setMainTab(tab.id)}
               className={`relative rounded-full px-5 py-2 text-sm font-medium transition-all ${
-                mainTab !== tab.id ? "hover:bg-[var(--surface)] hover:text-[var(--ink)]" : ""
+                mainTab === tab.id ? "" : "hover:bg-[var(--surface)] hover:text-[var(--ink)]"
               }`}
             >
               {mainTab === tab.id && (
@@ -92,16 +91,178 @@ export function ProjectsSection() {
   );
 }
 
-/* ─── Projects tab (dynamic groups) ─── */
+/* ─── Date parsing for timeline sort ─── */
+const MONTH_MAP: Record<string, number> = {
+  jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
+  jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+  gen: 1, mag: 5, giu: 6, lug: 7, ago: 8, set: 9, ott: 10, dic: 12,
+};
+
+function parseDateKey(dateStr: string | undefined): number {
+  if (!dateStr) return 0;
+  const [mon, year] = dateStr.split(" ");
+  return Number.parseInt(year ?? "0", 10) * 12 + (MONTH_MAP[mon?.toLowerCase() ?? ""] ?? 0);
+}
+
+/* ─── Small icon for timeline items ─── */
+function ProjectIcon({ type }: Readonly<{ type: ProjectItem["icon"] }>) {
+  const cls = "h-[18px] w-[18px] text-[var(--apple-blue)]";
+  if (type === "spark") {
+    return <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" stroke="currentColor" strokeWidth="1.5" /></svg>;
+  }
+  if (type === "code") {
+    return <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden><path d="M8 8L4 12L8 16M16 8L20 12L16 16M14 6L10 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+  }
+  return <svg className={cls} viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" /><path d="M3 12H21M12 3C14.5 5.5 16 8.7 16 12C16 15.3 14.5 18.5 12 21C9.5 18.5 8 15.3 8 12C8 8.7 9.5 5.5 12 3Z" stroke="currentColor" strokeWidth="1.5" /></svg>;
+}
+
+/* ─── Single project timeline item ─── */
+function ProjectTimelineItem({ project, locale, t }: Readonly<{
+  project: ProjectItem;
+  locale: "it" | "en";
+  t: ReturnType<typeof useLocale>["t"];
+}>) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const inProgress = isProjectInProgress(project);
+
+  useEffect(() => setIsMounted(true), []);
+
+  const dateLabel = project.endDate?.[locale] ?? project.startDate?.[locale];
+
+  return (
+    <>
+      <motion.div
+        className="relative flex gap-4 pb-6 last:pb-0"
+        variants={{
+          hidden: { opacity: 0, x: -16 },
+          visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
+        }}
+      >
+        <div className="relative z-10 mt-1.5 h-[18px] w-[18px] shrink-0 rounded-full border-2 border-[var(--apple-blue)] bg-[var(--bg)]" />
+
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="group flex-1 min-w-0 rounded-xl border border-[var(--surface-border)] bg-[var(--card-bg)] px-4 py-3 text-left transition-all hover:border-[var(--apple-blue)]/30 hover:bg-[var(--surface)] hover:shadow-sm"
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--apple-blue)]">{dateLabel}</p>
+
+          <div className="mt-2 flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--surface-border)] bg-[var(--bg)]">
+              <ProjectIcon type={project.icon} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold leading-snug text-[var(--ink)]">{project.title[locale]}</p>
+              <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-[var(--ink-3)]">{project.description[locale]}</p>
+            </div>
+          </div>
+
+          {project.technologies && project.technologies.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1">
+              {project.technologies.slice(0, 4).map((tech) => (
+                <span key={tech} className="rounded-md border border-[var(--surface-border)] bg-[var(--bg)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--ink-3)]">{tech}</span>
+              ))}
+              {project.technologies.length > 4 && (
+                <span className="rounded-md border border-[var(--apple-blue)]/25 bg-[var(--apple-blue)]/8 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--apple-blue)]">+{project.technologies.length - 4}</span>
+              )}
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-[var(--apple-blue)] transition-all group-hover:gap-2">
+            {t.projects.discoverMore}
+            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M5 12H19M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </button>
+      </motion.div>
+
+      {isMounted && isOpen && createPortal(
+        <div data-modal-open className="fixed inset-0 z-[90] flex items-center justify-center px-4 py-8 sm:px-6">
+          <button type="button" aria-label={t.projects.closeLabel} className="absolute inset-0 cursor-pointer bg-[#0b1020]/72" onClick={() => setIsOpen(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="relative z-10 w-full max-w-2xl cursor-default overflow-hidden rounded-3xl border border-[var(--modal-border)] bg-[var(--modal-bg)] p-6 shadow-[0_30px_70px_rgba(0,10,35,0.35)] sm:p-8"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-2xl font-semibold tracking-tight text-[var(--ink)]">{project.title[locale]}</h3>
+              <button type="button" aria-label={t.projects.closeLabel} onClick={() => setIsOpen(false)}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--card-border-solid)] bg-[var(--card-bg)] text-[var(--muted)] shadow-sm transition-all hover:border-[var(--apple-blue)]/40 hover:bg-[var(--surface)] hover:text-[var(--ink)]">
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mt-5 max-h-[70vh] space-y-5 overflow-y-auto pr-1 text-sm text-[var(--ink-4)] sm:text-[15px]">
+              {inProgress && (
+                <div className="rounded-2xl border border-[var(--amber-banner-border)] bg-[var(--amber-banner-bg)] px-4 py-3 text-amber-600 dark:text-amber-400">
+                  {t.projects.inProgressNote}
+                </div>
+              )}
+              <p className="leading-relaxed">{project.longDescription?.[locale] ?? t.projects.descriptionUpdating}</p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-[var(--card-border-solid)] bg-[var(--card-bg)] px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted)]">{t.projects.startDate}</p>
+                  <p className="mt-1 font-medium text-[var(--ink)]">{project.startDate?.[locale] ?? t.projects.tbd}</p>
+                </div>
+                <div className="rounded-xl border border-[var(--card-border-solid)] bg-[var(--card-bg)] px-4 py-3">
+                  <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted)]">{t.projects.endDate}</p>
+                  <p className="mt-1 font-medium text-[var(--ink)]">{project.endDate?.[locale] ?? t.projects.ongoing}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted)]">{t.projects.technologies}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(project.technologies?.length ? project.technologies : [t.projects.toBeSpecified]).map((tech) => (
+                    <Badge key={tech} variant="outline">{tech}</Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs uppercase tracking-[0.15em] text-[var(--muted)]">{t.projects.whatIDid}</p>
+                <ul className="mt-2 list-inside list-disc space-y-1.5 leading-relaxed text-[var(--ink-4)]">
+                  {(project.contributions?.length
+                    ? project.contributions.map((c) => c[locale])
+                    : [t.projects.toBeUpdated]
+                  ).map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+/* ─── Projects tab ─── */
 function ProjectsTab() {
   const groups = useMemo(() => getProjectGroups(), []);
   const [activeGroup, setActiveGroup] = useState(groups[0] ?? "");
-  const { t } = useLocale();
-  const projects = useMemo(() => getProjectsByGroup(activeGroup), [activeGroup]);
+  const { locale, t } = useLocale();
+
+  const projects = useMemo(() => {
+    const grouped = getProjectsByGroup(activeGroup);
+    return [...grouped].sort(
+      (a, b) =>
+        parseDateKey(b.endDate?.en ?? b.startDate?.en) -
+        parseDateKey(a.endDate?.en ?? a.startDate?.en)
+    );
+  }, [activeGroup]);
 
   return (
     <div className="space-y-6">
-      {/* Dynamic group sub-tabs */}
+      {/* Group filter pills */}
       <div className="flex flex-wrap gap-2">
         {groups.map((group) => (
           <button
@@ -109,7 +270,7 @@ function ProjectsTab() {
             type="button"
             onClick={() => setActiveGroup(group)}
             className={`relative rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-              activeGroup !== group ? "hover:bg-[var(--card-bg)] hover:text-[var(--ink)] hover:shadow-sm" : ""
+              activeGroup === group ? "" : "hover:bg-[var(--card-bg)] hover:text-[var(--ink)] hover:shadow-sm"
             }`}
           >
             {activeGroup === group && (
@@ -119,11 +280,7 @@ function ProjectsTab() {
                 transition={{ type: "spring", stiffness: 380, damping: 32 }}
               />
             )}
-            <span
-              className={`relative z-10 transition-colors ${
-                activeGroup === group ? "text-[var(--bg)]" : "text-[var(--muted)]"
-              }`}
-            >
+            <span className={`relative z-10 transition-colors ${activeGroup === group ? "text-[var(--bg)]" : "text-[var(--muted)]"}`}>
               {group}
             </span>
           </button>
@@ -133,32 +290,26 @@ function ProjectsTab() {
       {/* Divider */}
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-gradient-to-r from-[var(--card-border-solid)] to-transparent" />
-        <Badge variant="outline" className="uppercase tracking-[0.2em]">
-          {activeGroup}
-        </Badge>
+        <Badge variant="outline" className="uppercase tracking-[0.2em]">{activeGroup}</Badge>
       </div>
 
-      {/* Project grid with staggered animation */}
+      {/* Timeline */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeGroup}
           initial="hidden"
           animate="visible"
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
-          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          className="glass-card p-5 sm:p-6"
         >
           {projects.length > 0 ? (
-            projects.map((project) => (
-              <motion.div
-                key={project.id}
-                variants={{
-                  hidden: { opacity: 0, y: 24 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } }
-                }}
-              >
-                <ProjectCard project={project} />
-              </motion.div>
-            ))
+            <div className="relative">
+              <div className="absolute left-[9px] top-2 bottom-6 w-px bg-gradient-to-b from-[var(--apple-blue)] via-[var(--apple-blue)]/40 to-transparent" />
+              {projects.map((project) => (
+                <ProjectTimelineItem key={project.id} project={project} locale={locale} t={t} />
+              ))}
+            </div>
           ) : (
             <InProgressPlaceholder group={activeGroup} />
           )}
@@ -168,7 +319,7 @@ function ProjectsTab() {
   );
 }
 
-function InProgressPlaceholder({ group }: { group: string }) {
+function InProgressPlaceholder({ group }: Readonly<{ group: string }>) {
   const { t } = useLocale();
   return (
     <motion.article
@@ -398,7 +549,7 @@ function StudyTab() {
 }
 
 /* ─── Certificate icon ─── */
-function CertIcon({ category }: { category: string }) {
+function CertIcon({ category }: Readonly<{ category: string }>) {
   const cls = "h-5 w-5 text-[var(--apple-blue)]";
   if (category === "language") {
     return (
